@@ -1,51 +1,33 @@
-import {useState, useEffect, Component} from 'react'
+import { useReducer, useState } from "react"
 
-const useContador = (inicial) => {
-    const [contador, setContador] = useState(inicial)
-    const incrementar = () => {
-        setContador(contador + 1)
+// const state = {contador: 0}
+// action = {type: string, payload: any}
+const inicial = {contador:0}
+const reducer = (state,action) => {
+    switch(action.type){
+        case 'incrementar':
+            return {contador: state.contador + 1}
+        case 'decrementar':
+            return {contador: state.contador -1}
+        case 'set':
+            return {contador: action.payload}
+        default:
+            return state
     }
-    return [contador, incrementar]
 }
-/*const Interval = ({contador})=> {
-    useEffect(()=>{
-        const i = setInterval(()=>console.log(contador),1000)
-        return () => clearInterval(i)
-    },[contador])
-    return(
-        <p>Intervalo</p>
-    )
-}*/
-class Interval extends Component{
-    intervalo = ''
-    componentDidMount(){
-        this.intervalo = setInterval(()=>console.log(this.props.contador),1000)
-    }
 
-    componentWillUnmount(){
-        clearInterval(this.intervalo)
-    }
-
-    render(){
-        return(
-        <p>Intervalo2</p>
-        )
-    }
-    
-}
-const App = () => {
-    const [contador, incrementar] = useContador(0)
-    useEffect(()=>{
-        document.title = contador
-    },[contador])
-    return(
-        <div>
-            Contador: {contador}
-            <br/>
-            <button onClick={incrementar}>Incrementar</button>
-            <Interval contador={contador}/>
-        </div>
-    )
+const App = () =>{
+   const [state, dispatch] = useReducer(reducer, inicial)
+   const [valor, setValor] = useState(0)
+   return (
+       <div>
+           Contador {state.contador}
+           <input value={valor} onChange={e=>setValor(e.target.value)}/>
+           <button onClick={()=>dispatch({type: 'incrementar'})}>Mas</button>
+           <button onClick={()=>dispatch({type: 'decrementar'})}>Menos</button>
+           <button onClick={()=>dispatch({type: 'set', payload: valor})}>payload</button>
+       </div>
+   )
 }
 
 export default App
